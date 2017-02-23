@@ -1,0 +1,12 @@
+gdax {
+  fix {
+    address = localhost
+    port    = 4198
+  }
+
+  api {
+    passphrase = "<none>"
+    key        = "<none>"
+    secret     = "<none>"
+  }
+}
