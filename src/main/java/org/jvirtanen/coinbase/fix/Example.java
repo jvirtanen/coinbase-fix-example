@@ -1,18 +1,18 @@
-package org.jvirtanen.gdax.fix;
+package org.jvirtanen.coinbase.fix;
 
+import static com.paritytrading.philadelphia.coinbase.CoinbaseTags.*;
 import static com.paritytrading.philadelphia.fix42.FIX42Enumerations.*;
 import static com.paritytrading.philadelphia.fix42.FIX42MsgTypes.*;
 import static com.paritytrading.philadelphia.fix42.FIX42Tags.*;
-import static com.paritytrading.philadelphia.gdax.GDAXTags.*;
 import static org.jvirtanen.util.Applications.*;
 
 import com.paritytrading.philadelphia.FIXConfig;
+import com.paritytrading.philadelphia.FIXConnection;
+import com.paritytrading.philadelphia.FIXConnectionStatusListener;
 import com.paritytrading.philadelphia.FIXMessage;
 import com.paritytrading.philadelphia.FIXMessageListener;
-import com.paritytrading.philadelphia.FIXSession;
-import com.paritytrading.philadelphia.FIXStatusListener;
 import com.paritytrading.philadelphia.FIXVersion;
-import com.paritytrading.philadelphia.gdax.GDAX;
+import com.paritytrading.philadelphia.coinbase.Coinbase;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import java.io.FileNotFoundException;
@@ -29,7 +29,7 @@ class Example {
 
     public static void main(String[] args) {
         if (args.length != 1)
-            usage("gdax-fix-example <configuration-file>");
+            usage("coinbase-fix-example <configuration-file>");
 
         try {
             main(config(args[0]));
@@ -41,12 +41,12 @@ class Example {
     }
 
     public static void main(Config config) throws IOException {
-        InetAddress address = Configs.getInetAddress(config, "gdax.fix.address");
-        int         port    = Configs.getPort(config, "gdax.fix.port");
+        InetAddress address = Configs.getInetAddress(config, "coinbase.fix.address");
+        int         port    = Configs.getPort(config, "coinbase.fix.port");
 
-        String passphrase = config.getString("gdax.api.passphrase");
-        String key        = config.getString("gdax.api.key");
-        String secret     = config.getString("gdax.api.secret");
+        String passphrase = config.getString("coinbase.api.passphrase");
+        String key        = config.getString("coinbase.api.key");
+        String secret     = config.getString("coinbase.api.secret");
 
         SocketChannel channel = SocketChannel.open();
 
@@ -67,46 +67,46 @@ class Example {
 
         };
 
-        FIXStatusListener statusListener = new FIXStatusListener() {
+        FIXConnectionStatusListener statusListener = new FIXConnectionStatusListener() {
 
             @Override
-            public void close(FIXSession session, String message) {
+            public void close(FIXConnection connection, String message) {
                 printf("Close: %s\n", message);
             }
 
             @Override
-            public void sequenceReset(FIXSession session) {
+            public void sequenceReset(FIXConnection connection) {
                 printf("Received Sequence Reset\n");
             }
 
             @Override
-            public void tooLowMsgSeqNum(FIXSession session, long receivedMsgSeqNum,
+            public void tooLowMsgSeqNum(FIXConnection connection, long receivedMsgSeqNum,
                     long expectedMsgSeqNum) {
                 printf("Received too low MsgSeqNum: received %s, expected %s\n",
                         receivedMsgSeqNum, expectedMsgSeqNum);
             }
 
             @Override
-            public void heartbeatTimeout(FIXSession session) {
+            public void heartbeatTimeout(FIXConnection connection) {
                 printf("Heartbeat timeout\n");
             }
 
             @Override
-            public void reject(FIXSession session, FIXMessage message) {
+            public void reject(FIXConnection connection, FIXMessage message) {
                 printf("Received Reject\n");
             }
 
             @Override
-            public void logon(FIXSession session, FIXMessage message) throws IOException {
+            public void logon(FIXConnection connection, FIXMessage message) throws IOException {
                 printf("Received Logon\n");
 
-                session.sendLogout();
+                connection.sendLogout();
 
                 printf("Sent Logout\n");
             }
 
             @Override
-            public void logout(FIXSession session, FIXMessage message) {
+            public void logout(FIXConnection connection, FIXMessage message) {
                 printf("Received Logout\n");
 
                 receive = false;
@@ -114,31 +114,31 @@ class Example {
 
         };
 
-        FIXSession session = new FIXSession(channel, builder.build(),
+        FIXConnection connection = new FIXConnection(channel, builder.build(),
                 listener, statusListener);
 
-        FIXMessage message = session.create();
+        FIXMessage message = connection.create();
 
-        session.prepare(message, Logon);
+        connection.prepare(message, Logon);
 
         message.addField(EncryptMethod).setInt(EncryptMethodValues.None);
         message.addField(HeartBtInt).setInt(30);
         message.addField(Password).setString(passphrase);
 
-        GDAX.sign(message, secret);
+        Coinbase.sign(message, secret);
 
-        session.send(message);
+        connection.send(message);
 
         printf("Sent Logon\n");
 
         receive = true;
 
         while (receive) {
-            if (session.receive() < 0)
+            if (connection.receive() < 0)
                 break;
         }
 
-        session.close();
+        connection.close();
     }
 
     private static void printf(String format, Object... args) {

@@ -1,4 +1,4 @@
-gdax {
+coinbase {
   fix {
     address = localhost
     port    = 4198
