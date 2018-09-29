@@ -8,7 +8,7 @@ FIX engine for the JVM.
   [FIX API]: https://docs.pro.coinbase.com/#fix-api
   [Philadelphia]: https://github.com/paritytrading/philadelphia
 
-Building and running this application requires Java Development Kit (JDK) 8
+Building and running this application requires Java Development Kit (JDK) 11
 or newer and Maven.
 
 ## Usage

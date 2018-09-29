@@ -17,7 +17,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.Locale;
@@ -41,24 +40,24 @@ class Example {
     }
 
     public static void main(Config config) throws IOException {
-        InetAddress address = Configs.getInetAddress(config, "coinbase.fix.address");
-        int         port    = Configs.getPort(config, "coinbase.fix.port");
+        var address = Configs.getInetAddress(config, "coinbase.fix.address");
+        var port    = Configs.getPort(config, "coinbase.fix.port");
 
-        String passphrase = config.getString("coinbase.api.passphrase");
-        String key        = config.getString("coinbase.api.key");
-        String secret     = config.getString("coinbase.api.secret");
+        var passphrase = config.getString("coinbase.api.passphrase");
+        var key        = config.getString("coinbase.api.key");
+        var secret     = config.getString("coinbase.api.secret");
 
         SocketChannel channel = SocketChannel.open();
 
         channel.connect(new InetSocketAddress(address, port));
 
-        FIXConfig.Builder builder = new FIXConfig.Builder()
+        var builder = new FIXConfig.Builder()
             .setVersion(FIXVersion.FIX_4_2)
             .setSenderCompID(key)
             .setTargetCompID("Coinbase")
             .setHeartBtInt(30);
 
-        FIXMessageListener listener = new FIXMessageListener() {
+        var listener = new FIXMessageListener() {
 
             @Override
             public void message(FIXMessage message) {
@@ -67,7 +66,7 @@ class Example {
 
         };
 
-        FIXConnectionStatusListener statusListener = new FIXConnectionStatusListener() {
+        var statusListener = new FIXConnectionStatusListener() {
 
             @Override
             public void close(FIXConnection connection, String message) {
@@ -114,10 +113,9 @@ class Example {
 
         };
 
-        FIXConnection connection = new FIXConnection(channel, builder.build(),
-                listener, statusListener);
+        var connection = new FIXConnection(channel, builder.build(), listener, statusListener);
 
-        FIXMessage message = connection.create();
+        var message = connection.create();
 
         connection.prepare(message, Logon);
 
