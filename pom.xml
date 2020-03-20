@@ -14,7 +14,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
-    <philadelphia.version>1.0.0</philadelphia.version>
+    <philadelphia.version>1.2.0</philadelphia.version>
   </properties>
 
   <dependencies>
@@ -31,7 +31,12 @@
     <dependency>
       <groupId>com.paritytrading.philadelphia</groupId>
       <artifactId>philadelphia-coinbase</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.10.5</version>
     </dependency>
     <dependency>
       <groupId>org.jvirtanen.config</groupId>
