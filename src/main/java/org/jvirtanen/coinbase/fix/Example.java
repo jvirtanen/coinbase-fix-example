@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.Locale;
-import org.jvirtanen.config.Configs;
 
 class Example {
 
@@ -40,8 +39,8 @@ class Example {
     }
 
     public static void main(Config config) throws IOException {
-        var address = Configs.getInetAddress(config, "coinbase.fix.address");
-        var port    = Configs.getPort(config, "coinbase.fix.port");
+        var address = config.getString("coinbase.fix.address");
+        var port    = config.getInt("coinbase.fix.port");
 
         var passphrase = config.getString("coinbase.api.passphrase");
         var key        = config.getString("coinbase.api.key");
