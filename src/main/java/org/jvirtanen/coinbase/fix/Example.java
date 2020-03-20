@@ -4,7 +4,6 @@ import static com.paritytrading.philadelphia.coinbase.CoinbaseTags.*;
 import static com.paritytrading.philadelphia.fix42.FIX42Enumerations.*;
 import static com.paritytrading.philadelphia.fix42.FIX42MsgTypes.*;
 import static com.paritytrading.philadelphia.fix42.FIX42Tags.*;
-import static org.jvirtanen.util.Applications.*;
 
 import com.paritytrading.philadelphia.FIXConfig;
 import com.paritytrading.philadelphia.FIXConnection;
@@ -15,6 +14,8 @@ import com.paritytrading.philadelphia.FIXVersion;
 import com.paritytrading.philadelphia.coinbase.Coinbase;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigFactory;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -27,7 +28,7 @@ class Example {
 
     public static void main(String[] args) {
         if (args.length != 1)
-            usage("coinbase-fix-example <configuration-file>");
+            usage();
 
         try {
             main(config(args[0]));
@@ -136,6 +137,32 @@ class Example {
         }
 
         connection.close();
+    }
+
+    private static Config config(String filename) throws FileNotFoundException {
+        var file = new File(filename);
+        if (!file.exists() || !file.isFile())
+            throw new FileNotFoundException(filename + ": No such file");
+
+        return ConfigFactory.parseFile(file);
+    }
+
+    private static void usage() {
+        System.err.println("Usage: coinbase-fix-example <configuration-file>");
+        System.exit(2);
+    }
+
+    private static void error(Throwable throwable) {
+        System.err.println("error: " + throwable.getMessage());
+        System.exit(1);
+    }
+
+    private static void fatal(Throwable throwable) {
+        System.err.println("fatal: " + throwable.getMessage());
+        System.err.println();
+        throwable.printStackTrace(System.err);
+        System.err.println();
+        System.exit(1);
     }
 
     private static void printf(String format, Object... args) {
