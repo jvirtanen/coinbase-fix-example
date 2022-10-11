@@ -28,7 +28,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
-    <philadelphia.version>1.3.0</philadelphia.version>
+    <philadelphia.version>1.3.1</philadelphia.version>
   </properties>
 
   <dependencies>
