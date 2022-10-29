@@ -101,11 +101,6 @@ class Example {
             }
 
             @Override
-            public void heartbeatTimeout(FIXConnection connection) {
-                printf("Heartbeat timeout\n");
-            }
-
-            @Override
             public void reject(FIXConnection connection, FIXMessage message) {
                 printf("Received Reject\n");
             }
@@ -128,7 +123,8 @@ class Example {
 
         };
 
-        var connection = new FIXConnection(channel, builder.build(), listener, statusListener);
+        var connection = new FIXConnection(channel, builder.build(), listener, statusListener,
+                System.currentTimeMillis());
 
         var message = connection.create();
 
