@@ -1,6 +1,6 @@
 coinbase {
   fix {
-    address = localhost
+    address = fix.pro.coinbase.com
     port    = 4198
   }
 

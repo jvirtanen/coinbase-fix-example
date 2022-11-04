@@ -15,50 +15,28 @@ or newer and Maven.
 
 To build and run the application, follow these steps:
 
-1. Install [stunnel][], for example, using [Homebrew][]:
-
-    ```shell
-    brew install stunnel
-    ```
-
-2. Download the TLS certificate:
-
-    ```shell
-    openssl s_client -showcerts -connect fix.pro.coinbase.com:4198 < /dev/null | \
-        openssl x509 -outform PEM > fix.pro.coinbase.com.pem
-    ```
-
-3. Build the application:
+1. Build the application:
 
     ```shell
     mvn package
     ```
 
-4. Create a configuration file, `etc/example.conf`:
+2. Create a configuration file, `etc/example.conf`:
 
     ```shell
     cp etc/example.conf.template etc/example.conf
     ```
 
-5. Fill in the API passphrase, key, and secret in the configuration file,
+3. Fill in the API passphrase, key, and secret in the configuration file,
    `etc/example.conf`.
 
-6. Start stunnel:
-
-    ```shell
-    stunnel etc/stunnel.conf
-    ```
-
-7. Run the application:
+4. Run the application:
 
     ```shell
     java -jar coinbase-fix-example.jar etc/example.conf
     ```
 
 The application logs onto Coinbase Pro and immediately logs out.
-
-  [stunnel]: https://www.stunnel.org
-  [Homebrew]: https://brew.sh
 
 ## License
 

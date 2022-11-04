@@ -35,7 +35,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
+import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
+import javax.net.ssl.SSLContext;
+import tlschannel.ClientTlsChannel;
 
 class Example {
 
@@ -49,12 +52,12 @@ class Example {
             main(config(args[0]));
         } catch (ConfigException | FileNotFoundException e) {
             error(e);
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             fatal(e);
         }
     }
 
-    public static void main(Config config) throws IOException {
+    public static void main(Config config) throws IOException, NoSuchAlgorithmException {
         var address = config.getString("coinbase.fix.address");
         var port    = config.getInt("coinbase.fix.port");
 
@@ -62,9 +65,12 @@ class Example {
         var key        = config.getString("coinbase.api.key");
         var secret     = config.getString("coinbase.api.secret");
 
-        SocketChannel channel = SocketChannel.open();
+        var socketChannel = SocketChannel.open();
 
-        channel.connect(new InetSocketAddress(address, port));
+        socketChannel.connect(new InetSocketAddress(address, port));
+
+        var sslContext = SSLContext.getDefault();
+        var tlsChannel = ClientTlsChannel.newBuilder(socketChannel, sslContext).build();
 
         var builder = new FIXConfig.Builder()
             .setVersion(FIXVersion.FIX_4_2)
@@ -123,8 +129,7 @@ class Example {
 
         };
 
-        var connection = new FIXConnection(channel, builder.build(), listener, statusListener,
-                System.currentTimeMillis());
+        var connection = new FIXConnection(tlsChannel, builder.build(), listener, statusListener, System.currentTimeMillis());
 
         var message = connection.create();
 
