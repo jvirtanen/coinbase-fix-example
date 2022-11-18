@@ -82,7 +82,7 @@ class Example {
 
             @Override
             public void message(FIXMessage message) {
-                printf("Message: %s\n", message.getMsgType().asString());
+                printf("Message: %s\n", message.getMsgType());
             }
 
         };
