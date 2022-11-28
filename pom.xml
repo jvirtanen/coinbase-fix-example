@@ -29,7 +29,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
     <philadelphia.version>2.0.0</philadelphia.version>
-    <slf4j.version>2.0.4</slf4j.version>
+    <slf4j.version>2.0.5</slf4j.version>
   </properties>
 
   <dependencies>
